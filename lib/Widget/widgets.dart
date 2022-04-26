@@ -1,0 +1,1 @@
+export 'package:open_maps_flutter/Widget/search_widget.dart';
