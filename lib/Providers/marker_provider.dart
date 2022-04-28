@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:open_maps_flutter/Providers/providers.dart';
+import 'package:location/location.dart';
 import '../Model/models.dart';
+import 'providers.dart';
 
 class MarkerProvider with ChangeNotifier {
   List<MarkerMap> markerList = [];
   final MapController controller = MapController();
 
   Future<List<Marker>> getMarkersOnMap() async {
-    await getListaMarkers();
+    print('TAMAÑO: ${markerList.length}');
     return markerList
         .map((point) =>
         Marker(
@@ -17,8 +18,13 @@ class MarkerProvider with ChangeNotifier {
             width: 60,
             height: 60,
             anchorPos: AnchorPos.align(AnchorAlign.center),
-            builder: (context) => const Icon(Icons.pin_drop, size: 60,)
-        )).toList();
+            builder: (context) =>
+            Icon(
+              Icons.pin_drop,
+              color: (point.id != null && point.id == -1) ? Colors.red : Colors.black,
+              size: 60,
+            )))
+        .toList();
   }
 
   Future<List<MarkerMap>> getListaMarkers() async {
@@ -26,18 +32,20 @@ class MarkerProvider with ChangeNotifier {
     return markerList;
   }
 
-  void moveMap(LatLng value){
-    controller.move(value, 8);
+  void moveMap(LatLng value) {
+    controller.move(value, 12);
   }
 
   void addToLista(MarkerMap value) {
     markerList.add(value);
-    DBProvider.db.addMarkerDB(
-        MarkerMap(
-            title: value.title,
-            description: value.description,
-            latitude: value.latitude,
-            longitude: value.longitude));
+    if (value.id == null) {
+      DBProvider.db.addMarkerDB(MarkerMap(
+          title: value.title,
+          description: value.description,
+          latitude: value.latitude,
+          longitude: value.longitude));
+    }
+
     notifyListeners();
   }
 
@@ -48,11 +56,34 @@ class MarkerProvider with ChangeNotifier {
   }
 
   MarkerMap getMarker(LatLng point) {
-    return markerList.where((x) => x.latitude == point.latitude && x.longitude == point.longitude)
+    return markerList
+        .where((x) =>
+    x.latitude == point.latitude && x.longitude == point.longitude)
         .first;
   }
 
   Future<List<MarkerMap>> getMarkersSearch(String query) async {
     return markerList.where((x) => x.title.contains(query)).toList();
+  }
+
+  void setCurrentLocation(LocationData? value)
+  {
+    print('SET CURRENT LOC');
+    if(value == null){
+      markerList.add(MarkerMap(
+          id: -1,
+          title: 'Posicion Actual',
+          description: 'Mi posicion',
+          latitude: 0,
+          longitude: 0));
+      return;
+    }
+    print('No es nulo :D fernando cartulina');
+    markerList.add(MarkerMap(
+        id: -1,
+        title: 'Posicion Actual',
+        description: 'Mi posicion',
+        latitude: value.latitude!,
+        longitude: value.longitude!));
   }
 }

@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => MarkerProvider()),
-        ChangeNotifierProvider(create: (_) => FormProvider())
+        ChangeNotifierProvider(create: (_) => FormProvider()),
+        ChangeNotifierProvider(create: (_) => GeolocationProvider())
       ],
       child: MaterialApp(
         theme: ThemeData(

@@ -4,15 +4,13 @@ class MarkerMap {
   final String description;
   final double latitude;
   final double longitude;
-  bool visible;
 
   MarkerMap(
       {this.id,
       required this.title,
       required this.description,
       required this.latitude,
-      required this.longitude,
-      this.visible = false});
+      required this.longitude});
 
   factory MarkerMap.fromMap(Map<String, dynamic> map) => MarkerMap(
       id: map['Id'],

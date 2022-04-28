@@ -15,6 +15,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     MarkerProvider provider =
         Provider.of<MarkerProvider>(context, listen: true);
+    GeolocationProvider geolocationProvider =
+        Provider.of<GeolocationProvider>(context, listen: true);
     final PopupController _popupController = PopupController();
     return Scaffold(
         appBar: AppBar(
@@ -51,7 +53,7 @@ class HomeScreen extends StatelessWidget {
                   layers: [
                     TileLayerOptions(
                         urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                         subdomains: ['a', 'b', 'c']),
                     MarkerClusterLayerOptions(
                       spiderfyCircleRadius: 80,
@@ -102,8 +104,25 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                FloatingActionButton(elevation: 100,
-                    onPressed: () {}, child: const Icon(Icons.home))
+                FloatingActionButton(
+                    elevation: 100,
+                    onPressed: () {
+                      geolocationProvider.isActive =
+                          !geolocationProvider.isActive;
+
+                      if (!geolocationProvider.isActive) {
+                        geolocationProvider.stopLocationService();
+                      } else {
+                        geolocationProvider.startLocationService(provider.controller);
+                      }
+
+                      print(geolocationProvider.currentLocation);
+                      provider.setCurrentLocation(geolocationProvider.currentLocation);
+
+                    },
+                    child: Icon(geolocationProvider.isActive
+                        ? Icons.location_on
+                        : Icons.location_off))
               ]);
             }));
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sql.dart';
 import '../Model/models.dart';
 
 class DBProvider {
